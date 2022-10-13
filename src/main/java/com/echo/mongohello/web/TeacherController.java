@@ -51,6 +51,7 @@ public class TeacherController {
         return teacherDao.findAllTeachersOfDname(dname).toString();
     }
 
+    // insert one teacher. if the teacher already exists, return false. otherwise, return true.
 
     @Autowired
     public void setTeacherDao(TeacherDao teacherDao) {

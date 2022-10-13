@@ -32,6 +32,12 @@ public class StudentCourseController {
         return studentCourseDao.findAllStudentCoursesByCid(cid).toString();
     }
 
+    // findStudentCourseBySidAndCid
+    @RequestMapping("/findStudentCourseBySidAndCid")
+    public String findStudentCourseBySidAndCid(String sid, String cid) {
+        return studentCourseDao.findStudentCourseBySidAndCid(sid, cid).toString();
+    }
+
     @Autowired
     public void setStudentCourseDao(StudentCourseDao studentCourseDao) {
         this.studentCourseDao = studentCourseDao;

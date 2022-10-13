@@ -28,6 +28,7 @@ public class CourseDao {
         return mongoTemplate.findAll(Course.class);
     }
 
+    // insert one course.
 
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {

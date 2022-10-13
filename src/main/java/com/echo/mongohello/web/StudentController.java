@@ -1,11 +1,14 @@
 package com.echo.mongohello.web;
 
 import com.echo.mongohello.dao.StudentDao;
+import com.echo.mongohello.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @Component
 @RestController
@@ -38,6 +41,23 @@ public class StudentController {
         return studentDao.findNamesAndAges().toString();
     }
 
+    // insert a student.
+    // student has age, class_, dname, name, sid, sex, birthday, sid.
+    // sid is necessary. other fields are optional.
+    @RequestMapping("/insertStudent")
+    public Boolean insertStudent(String sid, Optional<String> class_, Optional<String> name, Optional<String> sex, Optional<Integer> age, Optional<String> birthday, Optional<String> dname) {
+        Student student = new Student();
+        student.setSid(sid);
+        // set values for optional fields.
+        class_.ifPresent(student::setClassId);
+        name.ifPresent(student::setName);
+        age.ifPresent(student::setAge);
+        sex.ifPresent(student::setSex);
+        birthday.ifPresent(student::setBirthday);
+        dname.ifPresent(student::setDname);
+        // insert student.
+        return studentDao.insertStudent(student);
+    }
 
     @Autowired
     public void setStudentDao(StudentDao studentDao) {

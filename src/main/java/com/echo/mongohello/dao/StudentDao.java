@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,21 @@ public class StudentDao {
             li.add("{name: " + student.getName() + ", age: " + student.getAge() + "}");
         }
         return li;
+    }
+
+    // insert one student. if the student already exists, return false. otherwise, return true.
+    public boolean insertStudent(Student student) {
+        if (findStudentBySid(student.getSid()) != null) {
+            return false;
+        }
+        mongoTemplate.insert(student);
+        return true;
+    }
+
+    // get all student that have a certain name, and return a list of student
+    public List<Student> findStudentByName(String name) {
+        Query query = new Query(Criteria.where("name").is(name));
+        return mongoTemplate.find(query, Student.class);
     }
 
     @Autowired

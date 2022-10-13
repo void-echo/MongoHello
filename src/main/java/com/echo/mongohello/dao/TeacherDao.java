@@ -49,7 +49,14 @@ public class TeacherDao {
         return mongoTemplate.findAll(Teacher.class);
     }
 
-
+    // insert one teacher. if the teacher already exists, return false. otherwise, return true.
+    public boolean insertTeacher(Teacher teacher) {
+        if (findTeacherByTid(teacher.getTid()) != null) {
+            return false;
+        }
+        mongoTemplate.insert(teacher);
+        return true;
+    }
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
