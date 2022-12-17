@@ -16,6 +16,6 @@ public class StudentCourse {
     // the name of the collection is "student_course".
     private String sid;
     private String cid;
-    private String score;
+    private Double score;
     private String tid;
 }

@@ -29,6 +29,14 @@ public class TeacherCourseDao {
         return mongoTemplate.find(query, TeacherCourse.class);
     }
 
+    public boolean insertTeacherCourse(TeacherCourse teacherCourse) {
+        if (findTeacherCourseByTidAndCid(teacherCourse.getTid(), teacherCourse.getCid()) != null) {
+            return false;
+        }
+        mongoTemplate.insert(teacherCourse);
+        return true;
+    }
+
     // find all teacher_courses
     public Iterable<TeacherCourse> findAllTeacherCourses() {
         return mongoTemplate.findAll(TeacherCourse.class);

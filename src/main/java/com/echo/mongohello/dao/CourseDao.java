@@ -44,3 +44,7 @@ public class CourseDao {
         this.mongoTemplate = mongoTemplate;
     }
 }
+
+
+// create a db in mongoDB.
+// use mongohello;

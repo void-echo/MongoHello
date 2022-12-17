@@ -1,12 +1,18 @@
 package com.echo.mongohello.dao;
 
 
+import com.echo.mongohello.entity.Course;
 import com.echo.mongohello.entity.StudentCourse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class StudentCourseDao {
@@ -33,6 +39,26 @@ public class StudentCourseDao {
     // find all student_courses
     public Iterable<StudentCourse> findAllStudentCourses() {
         return mongoTemplate.findAll(StudentCourse.class);
+    }
+
+    // insert a student_course.
+    public void insertStudentCourse(StudentCourse studentCourse) {
+        mongoTemplate.insert(studentCourse);
+    }
+
+    public List<String> findDistinctAllCourseNames() {
+        List<String> cids = mongoTemplate.findDistinct(new Query(), "cid", "student_course", String.class);
+        Set<String> cidSet = new HashSet<>(cids);
+        List<String> courseNames = new ArrayList<>();
+        cidSet.forEach((cid) -> {
+            Query query = new Query(Criteria.where("cid").is(cid));
+            Course course = mongoTemplate.findOne(query, Course.class);
+            String one = course == null ? null : course.getName();
+            if (one != null) {
+                courseNames.add(one);
+            }
+        });
+        return courseNames;
     }
 
     @Autowired

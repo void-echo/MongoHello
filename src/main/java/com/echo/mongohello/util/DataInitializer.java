@@ -1,8 +1,8 @@
 package com.echo.mongohello.util;
 
 import com.echo.mongohello.dao.*;
-import com.echo.mongohello.entity.Course;
-import com.echo.mongohello.entity.Student;
+import com.echo.mongohello.entity.*;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -22,33 +24,86 @@ import java.io.IOException;
 @CrossOrigin
 @RequestMapping("/data-init")
 public class DataInitializer {
-    public final static String xlsxDirPath = "D:\\Onedrive\\桌面\\大三上\\NoSQL\\__tmp__data\\";
+    private CourseDao courseDao;
+    private StudentDao studentDao;
+    private TeacherDao teacherDao;
+    private StudentCourseDao studentCourseDao;
+    private TeacherCourseDao teacherCourseDao;
+
+    private DataFormatter dataFormatter;
+    public final static String xlsxDirPath = "src/main/resources/data/";
     public final static String[] xlsxFileNames = {"student.xlsx", "course.xlsx", "student_course.xlsx", "teacher.xlsx", "teacher_course.xlsx"};
 
+    /**
+     * @return true if all tables are initialized successfully.
+     * @throws IOException if xlsx file is not found.
+     * DO NOT run this method if data is already put into database.
+     */
     @RequestMapping("/init")
-    public boolean init() throws IOException {
-
-        for (var xlsxFileName : xlsxFileNames) {
-            var table_name = xlsxFileName.split("\\.")[0];
-            Workbook workbook = new XSSFWorkbook(xlsxDirPath + xlsxFileName);
+    public boolean init(Optional<String> table) {
+        AtomicBoolean flag = new AtomicBoolean(true);
+        table.ifPresentOrElse((table_name) -> {
+            var xlsxFileName = table_name + ".xlsx";
+            Workbook workbook;
+            try {
+                workbook = new XSSFWorkbook(xlsxDirPath + xlsxFileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             // print sheet 0 header
-            var sheet = workbook.getSheetAt(0);
-            var header = sheet.getRow(0);
+
             switch (table_name) {
                 case "course" -> {
-                    return init_course(workbook);
+                    if (!init_course(workbook)) flag.set(false);
                 }
                 case "student" -> {
-                    return init_student(workbook);
+                    if (!init_student(workbook)) flag.set(false);
                 }
-                default -> {
-//                    throw new IllegalStateException("Unexpected value: " + table_name);
+                case "student_course" -> {
+                    if (!init_student_course(workbook)) flag.set(false);
+                }
+                case "teacher" -> {
+                    if (!init_teacher(workbook)) flag.set(false);
+                }
+                case "teacher_course" -> {
+                    if (!init_teacher_course(workbook)) flag.set(false);
                 }
             }
-        }
-        return true;
+        }, () -> {
+            for (var xlsxFileName : xlsxFileNames) {
+                var table_name = xlsxFileName.split("\\.")[0];
+                Workbook workbook;
+                try {
+                    workbook = new XSSFWorkbook(xlsxDirPath + xlsxFileName);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                // print sheet 0 header
+
+                switch (table_name) {
+                    case "course" -> {
+                        if (!init_course(workbook)) flag.set(false);
+                    }
+                    case "student" -> {
+                        if (!init_student(workbook)) flag.set(false);
+                    }
+                    case "student_course" -> {
+                        if (!init_student_course(workbook)) flag.set(false);
+                    }
+                    case "teacher" -> {
+                        if (!init_teacher(workbook)) flag.set(false);
+                    }
+                    case "teacher_course" -> {
+                        if (!init_teacher_course(workbook)) flag.set(false);
+                    }
+                }
+            }
+        });
+        return flag.get();
 
     }
+
+
 
     public boolean init_course(Workbook workbook) {
         // Note that the first row is the header
@@ -105,12 +160,76 @@ public class DataInitializer {
         return true;
     }
 
+    public boolean init_student_course(Workbook workbook) {
+        var sheet = workbook.getSheetAt(0);
+        for (int i = 1; i < sheet.getPhysicalNumberOfRows() + 1; i++) {
+            var row = sheet.getRow(i);
+            if (row == null) {
+                System.out.println("Operate end on a null row " + i + " of sheet " + sheet.getSheetName() + " of workbook " + workbook);
+                break;
+            }
+            // sid, cid, score, tid
+            var sid = row.getCell(0) == null ? null : row.getCell(0).toString();
+            if (sid == null) {
+                System.out.println("sid is null");
+                continue;
+            }
+            var cid = row.getCell(1) == null ? null : row.getCell(1).toString();
+            Double score = row.getCell(2) == null ? null : Double.parseDouble(row.getCell(2).toString());
+            var tid = row.getCell(3) == null ? null : row.getCell(3).toString();
+
+            var studentCourse = new StudentCourse(sid, cid, score, tid);
+            studentCourseDao.insertStudentCourse(studentCourse);
+        }
+        return true;
+    }
+
+    public boolean init_teacher(Workbook workbook) {
+        var sheet = workbook.getSheetAt(0);
+        for (int i = 1; i < sheet.getPhysicalNumberOfRows() + 1; i++) {
+            var row = sheet.getRow(i);
+            if (row == null) {
+                System.out.println("Operate end on a null row " + i + " of sheet " + sheet.getSheetName() + " of workbook " + workbook);
+                break;
+            }
+            // tid, name, sex, age, dname
+            var tid = row.getCell(0) == null ? null : row.getCell(0).toString();
+            if (tid == null) {
+                System.out.println("tid is null");
+                continue;
+            }
+            var name = row.getCell(1) == null ? null : row.getCell(1).toString();
+            var sex = row.getCell(2) == null ? null : row.getCell(2).toString();
+            Integer age = row.getCell(3) == null ? null : (int) row.getCell(3).getNumericCellValue();
+            var dname = row.getCell(4) == null ? null : row.getCell(4).toString();
+            Teacher teacher = new Teacher(tid, name, sex, age, dname);
+            teacherDao.insertTeacher(teacher);
+        }
+        return true;
+    }
+
+    public boolean init_teacher_course(Workbook workbook) {
+        var sheet = workbook.getSheetAt(0);
+        for (int i = 1; i < sheet.getPhysicalNumberOfRows() + 1; i++) {
+            var row = sheet.getRow(i);
+            if (row == null) {
+                System.out.println("Operate end on a null row " + i + " of sheet " + sheet.getSheetName() + " of workbook " + workbook);
+                break;
+            }
+            // tid, cid
+            var tid = row.getCell(0) == null ? null : row.getCell(0).toString();
+            if (tid == null) {
+                System.out.println("tid is null");
+                continue;
+            }
+            var cid = row.getCell(1) == null ? null : row.getCell(1).toString();
+            TeacherCourse teacherCourse = new TeacherCourse(tid, cid);
+            teacherCourseDao.insertTeacherCourse(teacherCourse);
+        }
+        return true;
+    }
     // every dao as a private member
-    private CourseDao courseDao;
-    private StudentDao studentDao;
-    private TeacherDao teacherDao;
-    private StudentCourseDao studentCourseDao;
-    private TeacherCourseDao teacherCourseDao;
+
 
     // autowire dao
     @Autowired
@@ -136,5 +255,10 @@ public class DataInitializer {
     @Autowired
     public void setTeacherCourseDao(TeacherCourseDao teacherCourseDao) {
         this.teacherCourseDao = teacherCourseDao;
+    }
+
+    @Autowired
+    public void setDataFormatter(DataFormatter dataFormatter) {
+        this.dataFormatter = dataFormatter;
     }
 }

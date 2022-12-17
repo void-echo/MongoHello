@@ -1,6 +1,7 @@
 package com.echo.mongohello;
 
 import com.echo.mongohello.dao.StudentDao;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +25,11 @@ public class MongoHelloApplication {
         SpringApplication.run(MongoHelloApplication.class, args);
         System.out.println("Hello, MongoDB!");
 
+    }
+
+    @Bean
+    public DataFormatter dataFormatter() {
+        return new DataFormatter();
     }
 
     @Autowired
