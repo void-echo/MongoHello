@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @NoArgsConstructor
@@ -21,5 +22,6 @@ public class Student {
     private Integer age;
     private String birthday;
     private String dname;
+    @Field("class")
     private String classId;
 }

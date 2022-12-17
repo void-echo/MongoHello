@@ -28,6 +28,15 @@ public class CourseDao {
         return mongoTemplate.findAll(Course.class);
     }
 
+    // insert one course. if the course already exists, return false. otherwise, return true.
+    public boolean insertCourse(Course course) {
+        if (findCourseByCid(course.getCid()) != null) {
+            return false;
+        }
+        mongoTemplate.insert(course);
+        return true;
+    }
+
     // insert one course.
 
     @Autowired
