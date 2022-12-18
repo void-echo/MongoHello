@@ -97,6 +97,21 @@ public class PhonySQLHelper {
         return studentDao.eachCourseEnrollNumAndAvgScore();
     }
 
+    @RequestMapping("/find-score-distribution")
+    public List<Map<String, Object>> findScoreDistribution() {
+        return studentDao.findScoreDistribution();
+    }
+
+    @RequestMapping("/find-top-10-avg-score-courses")
+    public List<Map<String, Object>> findTopTenAvgScoreCourses() {
+        return studentDao.findTopTenAvgScoreCourses();
+    }
+
+    @RequestMapping("/find-top-10-enroll-courses")
+    public List<Map<String, Object>> findTopTenEnrollCourses() {
+        return studentDao.findTopTenEnrollCourses();
+    }
+
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;

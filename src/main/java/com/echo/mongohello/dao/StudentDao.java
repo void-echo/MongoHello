@@ -9,12 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
-import java.math.BigInteger;
 import java.util.*;
 
 
@@ -172,6 +170,115 @@ public class StudentDao {
         return list;
     }
 
+    /**
+     * @return [
+     * {
+     * "A": 1,
+     * "B": 1,
+     * "C": 2,
+     * "D": 1,
+     * "name": "韩娟娟"
+     * }, {...}, ..., {...}]
+     */
+    public List<Map<String, Object>> findScoreDistribution() {
+        Aggregation aggregationA = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("score").gte(85)),
+                Aggregation.group("sid").count().as("A"));
+        var resultsA = mongoTemplate.aggregate(aggregationA, "student_course", Map.class);
+        var aggregationB = Aggregation.newAggregation(Aggregation.match(Criteria.where("score").lt(85).gte(75)),
+                Aggregation.group("sid").count().as("B"));
+        var resultsB = mongoTemplate.aggregate(aggregationB, "student_course", Map.class);
+        var aggregationC = Aggregation.newAggregation(Aggregation.match(Criteria.where("score").lt(75).gte(60)),
+                Aggregation.group("sid").count().as("C"));
+        var resultsC = mongoTemplate.aggregate(aggregationC, "student_course", Map.class);
+        var aggregationD = Aggregation.newAggregation(Aggregation.match(Criteria.where("score").lt(60)),
+                Aggregation.group("sid").count().as("D"));
+        var resultsD = mongoTemplate.aggregate(aggregationD, "student_course", Map.class);
+        Map<String, Map<String, Object>> tem = new HashMap<>();
+        List<Student> students = mongoTemplate.findAll(Student.class, "student");
+        for (var student : students) {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("name", student.getName());
+            tem.put(student.getSid(), hashMap);
+        }
+        resultsA.forEach((tinySet) -> {
+            String id = (String) tinySet.get("_id");
+            if (tem.get(id) != null) {
+                tem.get(id).put("A", tinySet.get("A"));
+            }
+        });
+        resultsB.forEach((tinySet) -> {
+            String id = (String) tinySet.get("_id");
+            if (tem.get(id) != null) {
+                tem.get(id).put("B", tinySet.get("B"));
+            }
+        });
+        resultsC.forEach((tinySet) -> {
+            String id = (String) tinySet.get("_id");
+            if (tem.get(id) != null) {
+                tem.get(id).put("C", tinySet.get("C"));
+            }
+        });
+        resultsD.forEach((tinySet) -> {
+            String id = (String) tinySet.get("_id");
+            if (tem.get(id) != null) {
+                tem.get(id).put("D", tinySet.get("D"));
+            }
+        });
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (var entry : tem.entrySet()) {
+            list.add(entry.getValue());
+        }
+        for (var stringObjectMap : list) {
+            stringObjectMap.putIfAbsent("A", 0);
+            stringObjectMap.putIfAbsent("B", 0);
+            stringObjectMap.putIfAbsent("C", 0);
+            stringObjectMap.putIfAbsent("D", 0);
+        }
+        return list;
+    }
+
+    public List<Map<String, Object>> findTopTenAvgScoreCourses() {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.group("cid").avg("score").as("avgScore"),
+                Aggregation.sort(Sort.Direction.DESC, "avgScore"), Aggregation.limit(10));
+        var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (var map : results) {
+            Query query = new Query(Criteria.where("cid").is(map.get("_id")));
+            Course course = mongoTemplate.findOne(query, Course.class, "course");
+            Map<String, Object> newMap = new HashMap<>();
+            if (course == null) {
+                continue;
+            }
+            newMap.put("cid", map.get("_id"));
+            newMap.put("cname", course.getName());
+            newMap.put("avgScore", map.get("avgScore"));
+            list.add(newMap);
+        }
+        return list;
+    }
+
+    public List<Map<String, Object>> findTopTenEnrollCourses() {
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.group("cid").count().as("count"),
+                Aggregation.sort(Sort.Direction.DESC, "count"), Aggregation.limit(10));
+        var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (var map : results) {
+            Query query = new Query(Criteria.where("cid").is(map.get("_id")));
+            var course = mongoTemplate.findOne(query, Course.class, "course");
+            Map<String, Object> newMap = new HashMap<>();
+            if (course == null) {
+                continue;
+            }
+            newMap.put("cid", map.get("_id"));
+            newMap.put("cname", course.getName());
+            newMap.put("count", map.get("count"));
+            list.add(newMap);
+        }
+        return list;
+    }
 
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {
