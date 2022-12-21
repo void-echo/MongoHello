@@ -47,10 +47,28 @@ public class StudentDao {
         List<String> li = new ArrayList<>();
         Query query = new Query(Criteria.where("name").exists(true).and("age").exists(true));
         // return in this format:
-        // [{"name":"Tom","age":18},{"name":"Jerry","age":19}]
+        // [{"name": "Tom","age": 18},{"name": "Jerry","age": 19}]
         List<Student> students = mongoTemplate.find(query, Student.class);
         for (Student student : students) {
             li.add("{name: " + student.getName() + ", age: " + student.getAge() + "}");
+        }
+        return li;
+    }
+
+    public List<Student> findSoftwareAndAgeLessThan(Integer age) {
+        Query query = new Query(Criteria.where("age").lt(age).and("dname").is("软件学院"));
+        return mongoTemplate.find(query, Student.class);
+    }
+
+    public List<Map<String, String>> findNameAndSexOfStudentAgeLt(Integer age) {
+        Query query = new Query(Criteria.where("age").lt(age));
+        List<Map<String, String>> li = new ArrayList<>();
+        List<Student> students = mongoTemplate.find(query, Student.class);
+        for (Student student : students) {
+            Map<String, String> map = new HashMap<>();
+            map.put("name", student.getName());
+            map.put("sex", student.getSex());
+            li.add(map);
         }
         return li;
     }

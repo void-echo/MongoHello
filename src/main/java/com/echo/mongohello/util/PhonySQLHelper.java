@@ -112,6 +112,16 @@ public class PhonySQLHelper {
         return studentDao.findTopTenEnrollCourses();
     }
 
+    @RequestMapping("/find-sc-by-sid-with-t-name")
+    public List<Map<String, String>> findSCbySidWithTName(String sid) {
+        return studentCourseDao.findSCbySidWithTName(sid);
+    }
+
+    @RequestMapping("/get-available-courses-by-sid")
+    public List<Course> getAvailableCourse(String sid) {
+        return studentCourseDao.getAvailableCourse(sid);
+    }
+
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
