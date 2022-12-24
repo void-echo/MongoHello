@@ -36,6 +36,7 @@ public class StudentCourseController {
     }
 
     // findStudentCourseBySidAndCid
+    //
     @RequestMapping("/findStudentCourseBySidAndCid")
     public String findStudentCourseBySidAndCid(String sid, String cid) {
         return studentCourseDao.findStudentCourseBySidAndCid(sid, cid).toString();
