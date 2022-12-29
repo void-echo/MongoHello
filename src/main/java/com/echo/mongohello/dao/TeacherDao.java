@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class TeacherDao {
     // dao class for teacher in mongoDB.
@@ -21,31 +23,37 @@ public class TeacherDao {
     }
 
     // find all teachers having age more than given age.
-    public Iterable<Teacher> findTeachersByAgeMoreThan(Integer age) {
+    public List<Teacher> findTeachersByAgeMoreThan(Integer age) {
         Query query = new Query(Criteria.where("age").gt(age));
         return mongoTemplate.find(query, Teacher.class);
     }
 
-    // find all teachers whose sex equals "M"
-    public Iterable<Teacher> findAllMaleTeachers() {
-        Query query = new Query(Criteria.where("sex").is("M"));
+    // find all teachers whose sex equals "男"
+    public List<Teacher> findAllMaleTeachers() {
+        Query query = new Query(Criteria.where("sex").is("男"));
         return mongoTemplate.find(query, Teacher.class);
     }
 
-    // find all teachers whose sex equals "F"
-    public Iterable<Teacher> findAllFemaleTeachers() {
-        Query query = new Query(Criteria.where("sex").is("F"));
+    public List<Teacher> findMaleTeachersOlderThan(Integer age) {
+        // age > 50 && sex = '男'
+        Query query = new Query(Criteria.where("age").gt(age).and("sex").is("男"));
+        return mongoTemplate.find(query, Teacher.class);
+    }
+
+    // find all teachers whose sex equals "女"
+    public List<Teacher> findAllFemaleTeachers() {
+        Query query = new Query(Criteria.where("sex").is("女"));
         return mongoTemplate.find(query, Teacher.class);
     }
 
     // find teachers having dname equals given dname.
-    public Iterable<Teacher> findAllTeachersOfDname(String dname) {
+    public List<Teacher> findAllTeachersOfDname(String dname) {
         Query query = new Query(Criteria.where("dname").is(dname));
         return mongoTemplate.find(query, Teacher.class);
     }
 
     // find all teachers
-    public Iterable<Teacher> findAllTeachers() {
+    public List<Teacher> findAllTeachers() {
         return mongoTemplate.findAll(Teacher.class);
     }
 

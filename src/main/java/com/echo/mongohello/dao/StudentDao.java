@@ -32,25 +32,25 @@ public class StudentDao {
     }
 
     // find all students having age less than given age.
-    public Iterable<Student> findStudentsByAgeLessThan(Integer age) {
+    public List<Student> findStudentsByAgeLessThan(Integer age) {
         Query query = new Query(Criteria.where("age").lt(age));
         return mongoTemplate.find(query, Student.class);
     }
 
     // find all students
-    public Iterable<Student> findAllStudents() {
+    public List<Student> findAllStudents() {
         return mongoTemplate.findAll(Student.class);
     }
 
     // find all the names and ages of student
-    public List<String> findNamesAndAges() {
-        List<String> li = new ArrayList<>();
+    public List<Map<String, String>> findNamesAndAges() {
+        List<Map<String, String>> li = new ArrayList<>();
         Query query = new Query(Criteria.where("name").exists(true).and("age").exists(true));
         // return in this format:
         // [{"name": "Tom","age": 18},{"name": "Jerry","age": 19}]
         List<Student> students = mongoTemplate.find(query, Student.class);
         for (Student student : students) {
-            li.add("{name: " + student.getName() + ", age: " + student.getAge() + "}");
+            li.add(Map.of("name", student.getName(), "age", student.getAge().toString()));
         }
         return li;
     }
@@ -98,7 +98,6 @@ public class StudentDao {
         var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
         List<StudentAndGPA> studentAndGPAList = new ArrayList<>();
         results.forEach((tinySet) -> {
-            System.out.println(tinySet);
             Query query = new Query(Criteria.where("sid").is(tinySet.get("_id")));
             Student student = mongoTemplate.findOne(query, Student.class, "student");
             if (student == null || student.getName() == null) {
@@ -124,7 +123,6 @@ public class StudentDao {
         var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
         List<StudentAndSelectedCourseNum> studentAndSelectedCourseNumList = new ArrayList<>();
         results.forEach((tinySet) -> {
-            System.out.println(tinySet);
             Query query = new Query(Criteria.where("sid").is(tinySet.get("_id")));
             Student student = mongoTemplate.findOne(query, Student.class, "student");
             if (student == null || student.getName() == null) {
@@ -145,7 +143,6 @@ public class StudentDao {
         var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
         List<Map<String, Object>> list = new ArrayList<>();
         results.forEach((tinySet) -> {
-            System.out.println(tinySet);
             Query query = new Query(Criteria.where("sid").is(tinySet.get("_id")));
             Student student = mongoTemplate.findOne(query, Student.class, "student");
             Query q1 = new Query(Criteria.where("score").is(tinySet.get("bestScore")).and("sid").is(tinySet.get("_id")));
@@ -172,7 +169,6 @@ public class StudentDao {
         var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
         List<Map<String, Object>> list = new ArrayList<>();
         results.forEach((tinySet) -> {
-            System.out.println(tinySet);
             Query query = new Query(Criteria.where("cid").is(tinySet.get("_id")));
             Course course = mongoTemplate.findOne(query, Course.class, "course");
             Map<String, Object> map = new HashMap<>();

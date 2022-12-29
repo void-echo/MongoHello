@@ -1,11 +1,14 @@
 package com.echo.mongohello.web;
 
 import com.echo.mongohello.dao.TeacherCourseDao;
+import com.echo.mongohello.entity.TeacherCourse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Component
 @RestController
@@ -16,26 +19,26 @@ public class TeacherCourseController {
 
     // get teacherCourses by tid.
     @RequestMapping("/getTeacherCourseByTid")
-    public String getTeacherCourseByTid(String tid) {
-        return teacherCourseDao.findAllTeacherCoursesByTid(tid).toString();
+    public List<TeacherCourse> getTeacherCourseByTid(String tid) {
+        return teacherCourseDao.findAllTeacherCoursesByTid(tid);
     }
 
     // findTeacherCourseByTidAndCid
     @RequestMapping("/findTeacherCourseByTidAndCid")
-    public String findTeacherCourseByTidAndCid(String tid, String cid) {
-        return teacherCourseDao.findTeacherCourseByTidAndCid(tid, cid).toString();
+    public TeacherCourse findTeacherCourseByTidAndCid(String tid, String cid) {
+        return teacherCourseDao.findTeacherCourseByTidAndCid(tid, cid);
     }
 
     // get all teacherCourses.
     @RequestMapping("/getAllTeacherCourses")
-    public String getAllTeacherCourses() {
-        return teacherCourseDao.findAllTeacherCourses().toString();
+    public List<TeacherCourse> getAllTeacherCourses() {
+        return teacherCourseDao.findAllTeacherCourses();
     }
 
     // find all teacher_courses having cid equals given cid.
     @RequestMapping("/findTeacherCoursesByCid")
-    public String findTeacherCoursesByCid(String cid) {
-        return teacherCourseDao.findAllTeacherCoursesByCid(cid).toString();
+    public List<TeacherCourse> findTeacherCoursesByCid(String cid) {
+        return teacherCourseDao.findAllTeacherCoursesByCid(cid);
     }
 
     @Autowired

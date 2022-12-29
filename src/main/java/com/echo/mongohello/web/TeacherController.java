@@ -2,11 +2,15 @@ package com.echo.mongohello.web;
 
 
 import com.echo.mongohello.dao.TeacherDao;
+import com.echo.mongohello.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 @Component
 @RestController
@@ -17,38 +21,45 @@ public class TeacherController {
 
     // get one teacher by tid.
     @RequestMapping("/getTeacherByTid")
-    public String getTeacherByTid(String tid) {
-        return teacherDao.findTeacherByTid(tid).toString();
+    public Teacher getTeacherByTid(String tid) {
+        return teacherDao.findTeacherByTid(tid);
     }
 
     // get all teachers.
     @RequestMapping("/getAllTeachers")
-    public String getAllTeachers() {
-        return teacherDao.findAllTeachers().toString();
+    public List<Teacher> getAllTeachers() {
+        return teacherDao.findAllTeachers();
     }
 
     // get all teachers having age more than given age.
     @RequestMapping("/getTeachersByAgeMoreThan")
-    public String getTeachersByAgeLessThan(Integer age) {
-        return teacherDao.findTeachersByAgeMoreThan(age).toString();
+    public List<Teacher> getTeachersByAgeLessThan(Integer age) {
+        return teacherDao.findTeachersByAgeMoreThan(age);
     }
 
     // find all male teachers
     @RequestMapping("/getAllMaleTeachers")
-    public String getAllMaleTeachers() {
-        return teacherDao.findAllMaleTeachers().toString();
+    public List<Teacher> getAllMaleTeachers() {
+        return teacherDao.findAllMaleTeachers();
     }
 
     // find all female teachers
     @RequestMapping("/getAllFemaleTeachers")
-    public String getAllFemaleTeachers() {
-        return teacherDao.findAllFemaleTeachers().toString();
+    public List<Teacher> getAllFemaleTeachers() {
+        return teacherDao.findAllFemaleTeachers();
+    }
+
+    @RequestMapping("/findMaleTeachersOlderThan")
+    public List<Teacher> findMaleTeachersOlderThan(Optional<Integer> age_) {
+        var age = age_.orElse(50);
+        return teacherDao.findMaleTeachersOlderThan(age);
     }
 
     // find teachers having dname equals given dname.
     @RequestMapping("/getAllTeachersOfDname")
-    public String getTeachersByDname(String dname) {
-        return teacherDao.findAllTeachersOfDname(dname).toString();
+    public List<Teacher> getTeachersByDname(Optional<String> dname_) {
+        var dname = dname_.orElse("计算机科学与技术学院");
+        return teacherDao.findAllTeachersOfDname(dname);
     }
 
     // insert one teacher. if the teacher already exists, return false. otherwise, return true.

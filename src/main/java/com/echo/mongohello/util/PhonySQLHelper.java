@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,8 +74,13 @@ public class PhonySQLHelper {
     }
 
     @RequestMapping("/find-distinct-all-course-names-in-student-course")
-    public List<String> findDistinctAllCourseNamesInStudentCourse() {
-        return studentCourseDao.findDistinctAllCourseNames();
+    public List<Map<String, String>> findDistinctAllCourseNamesInStudentCourse() {
+        var li = studentCourseDao.findDistinctAllCourseNames();
+        List<Map<String, String>> res = new ArrayList<>();
+        for (var i : li) {
+            res.add(Map.of("course_name", i));
+        }
+        return res;
     }
 
     @RequestMapping("/gpa-top-10-students")

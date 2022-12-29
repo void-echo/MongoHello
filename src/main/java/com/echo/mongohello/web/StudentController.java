@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -19,26 +21,40 @@ public class StudentController {
 
     // get one student by sid.
     @RequestMapping("/getStudentBySid")
-    public String getStudentBySid(String sid) {
-        return studentDao.findStudentBySid(sid).toString();
+    public Student getStudentBySid(String sid) {
+        return studentDao.findStudentBySid(sid);
     }
 
     // get all students having age less than 20.
     @RequestMapping("/getStudentsByAgeLessThan")
-    public String getStudentsByAgeLessThan(Integer age) {
-        return studentDao.findStudentsByAgeLessThan(age).toString();
+    public List<Student> getStudentsByAgeLessThan(Optional<Integer> age_) {
+        int age = age_.orElse(20);
+        return studentDao.findStudentsByAgeLessThan(age);
     }
 
     // get all students.
     @RequestMapping("/getAllStudents")
-    public String getAllStudents() {
-        return studentDao.findAllStudents().toString();
+    public List<Student> getAllStudents() {
+        return studentDao.findAllStudents();
     }
 
     // get all the names and ages of student.
     @RequestMapping("/getNamesAndAges")
-    public String getNamesAndAges() {
-        return studentDao.findNamesAndAges().toString();
+    public List<Map<String, String>> getNamesAndAges() {
+        return studentDao.findNamesAndAges();
+    }
+
+    @RequestMapping("/findSoftwareAndAgeLessThan")
+
+    public List<Student> findSoftwareAndAgeLessThan(Optional<Integer> age_) {
+        int age = age_.orElse(20);
+        return studentDao.findSoftwareAndAgeLessThan(age);
+    }
+
+    @RequestMapping("/findNameAndSexOfStudent")
+    public List<Map<String, String>> findNameAndSexOfStudentAgeLt(Optional<Integer> age_) {
+        var age = age_.orElse(10000);
+        return studentDao.findNameAndSexOfStudentAgeLt(age);
     }
 
     // insert a student.

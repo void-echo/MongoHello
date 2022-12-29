@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class CourseDao {
     private MongoTemplate mongoTemplate;
@@ -18,13 +20,13 @@ public class CourseDao {
     }
 
     // find course by fcid.
-    public Iterable<Course> findCourseByFcid(String fcid) {
+    public List<Course> findCourseByFcid(String fcid) {
         Query query = new Query(Criteria.where("fcid").is(fcid));
         return mongoTemplate.find(query, Course.class);
     }
 
     // find all courses
-    public Iterable<Course> findAllCourses() {
+    public List<Course> findAllCourses() {
         return mongoTemplate.findAll(Course.class);
     }
 
