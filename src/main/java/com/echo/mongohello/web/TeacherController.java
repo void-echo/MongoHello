@@ -5,11 +5,10 @@ import com.echo.mongohello.dao.TeacherDao;
 import com.echo.mongohello.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -62,7 +61,19 @@ public class TeacherController {
         return teacherDao.findAllTeachersOfDname(dname);
     }
 
+    @RequestMapping(value = "/insert-many", method = RequestMethod.POST)
+    public void insertMany(@RequestBody List<Map<String, Object>> list) {
+        teacherDao.insertMany(list);
+    }
+
     // insert one teacher. if the teacher already exists, return false. otherwise, return true.
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public void updateOne(@RequestBody List<Map<String, Object>> list) {
+        System.out.println("GOT: ");
+        System.out.println(list);
+        teacherDao.updateMany(list);
+    }
 
     @Autowired
     public void setTeacherDao(TeacherDao teacherDao) {

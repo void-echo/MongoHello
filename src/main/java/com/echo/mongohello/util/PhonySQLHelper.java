@@ -98,6 +98,11 @@ public class PhonySQLHelper {
         return studentDao.findEachBestCourseScoreAndName();
     }
 
+    @RequestMapping("/find-each-course-best-student-score-and-name")
+    public List<Map<String, Object>> findMaxScoreOfEveryCourse() {
+        return studentDao.findMaxScoreOfEveryCourse();
+    }
+
     @RequestMapping("/each-course-enroll-student-num-and-avg-score")
     public List<Map<String, Object>> eachCourseEnrollNumAndAvgScore() {
         return studentDao.eachCourseEnrollNumAndAvgScore();
@@ -119,6 +124,7 @@ public class PhonySQLHelper {
     }
 
     @RequestMapping("/find-sc-by-sid-with-t-name")
+    @Deprecated         // FAKE SQL: RETURNING NULL
     public List<Map<String, String>> findSCbySidWithTName(String sid) {
         return studentCourseDao.findSCbySidWithTName(sid);
     }

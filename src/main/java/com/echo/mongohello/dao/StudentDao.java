@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -135,11 +136,14 @@ public class StudentDao {
         return studentAndSelectedCourseNumList;
     }
 
+    /**
+     * Note that this method costs a lot of time, and we added `limit 100` for saving time.
+     */
     public List<Map<String, Object>> findEachBestCourseScoreAndName() {
         // items: { sid, student_name, course_name, score }
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.group("sid").max("score").as("bestScore"),
-                Aggregation.limit(100));
+                Aggregation.limit(100));             // limit 100 for saving time.
         var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
         List<Map<String, Object>> list = new ArrayList<>();
         results.forEach((tinySet) -> {
@@ -160,6 +164,33 @@ public class StudentDao {
             map.put("score", tinySet.get("bestScore"));
             list.add(map);
         });
+        return list;
+    }
+
+    public List<Map<String, Object>> findMaxScoreOfEveryCourse() {
+        Aggregation aggregation = Aggregation.newAggregation(Aggregation.group("cid").max("score").as("max_score"));
+        var results = mongoTemplate.aggregate(aggregation, "student_course", Map.class);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (var map : results) {
+            Query query = new Query(Criteria.where("cid").is(map.get("_id")));
+            Course course = mongoTemplate.findOne(query, Course.class, "course");
+            if (course == null) {
+                continue;
+            }
+            Query query1 = new Query(Criteria.where("score").is(map.get("max_score")).and("cid").is(map.get("_id")));
+            StudentCourse sc = mongoTemplate.findOne(query1, StudentCourse.class, "student_course");
+            assert sc != null;
+            Query query2 = new Query(Criteria.where("sid").is(sc.getSid()));
+            Student student = mongoTemplate.findOne(query2, Student.class, "student");
+            Map<String, Object> record = new HashMap<>();
+
+            record.put("cid", map.get("_id"));
+            record.put("cname", course.getName());
+            record.put("max_score", map.get("max_score"));
+            assert student != null;
+            record.put("student_name", student.getName());
+            list.add(record);
+        }
         return list;
     }
 
@@ -271,6 +302,27 @@ public class StudentDao {
             list.add(newMap);
         }
         return list;
+    }
+
+    public void insertMany(List<Map<String, Object>> list) {
+        mongoTemplate.insert(list, "student");
+    }
+
+    public void updateOne(Map<String, Object> map) {
+        Query query = new Query(Criteria.where("sid").is(map.get("sid")));
+        Update update = new Update();
+        for (var entry : map.entrySet()) {
+            var key = entry.getKey();
+            if (key.equals("classId")) {
+                key = "class";
+            }
+            update.set(key, entry.getValue());
+        }
+        mongoTemplate.updateFirst(query, update, "student");
+    }
+
+    public void updateMany(List<Map<String, Object>> list) {
+        list.forEach(this::updateOne);
     }
 
     public List<Map<String, Object>> findTopTenEnrollCourses() {

@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class TeacherDao {
@@ -64,6 +66,23 @@ public class TeacherDao {
         }
         mongoTemplate.insert(teacher);
         return true;
+    }
+
+    public void insertMany(List<Map<String, Object>> list) {
+        mongoTemplate.insert(list, "teacher");
+    }
+
+    public void updateOne(Map<String, Object> map) {
+        Query query = new Query(Criteria.where("tid").is(map.get("tid")));
+        Update update = new Update();
+        for (var entry : map.entrySet()) {
+            update.set(entry.getKey(), entry.getValue());
+        }
+        mongoTemplate.updateFirst(query, update, Teacher.class);
+    }
+
+    public void updateMany(List<Map<String, Object>> list) {
+        list.forEach(this::updateOne);
     }
     @Autowired
     public void setMongoTemplate(MongoTemplate mongoTemplate) {

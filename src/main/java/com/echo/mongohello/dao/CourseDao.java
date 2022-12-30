@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CourseDao {
@@ -39,6 +41,26 @@ public class CourseDao {
         return true;
     }
 
+    public void insertMany(List<Map<String, Object>> list) {
+        mongoTemplate.insert(list, "course");
+    }
+
+    /**
+     * @param map Json format: {cid: "xxx", name: "xxx", credit: 3, fcid: "xxx"}
+     * Note that this method will change the `_id` of the course.
+     */
+    public void updateOne(Map<String, Object> map) {
+        Query query = new Query(Criteria.where("cid").is(map.get("cid")));
+        Update update = new Update();
+        for (var entry : map.entrySet()) {
+            update.set(entry.getKey(), entry.getValue());
+        }
+        mongoTemplate.updateFirst(query, update, Course.class);
+    }
+
+    public void updateMany(List<Map<String, Object>> list) {
+        list.forEach(this::updateOne);
+    }
     // insert one course.
 
     @Autowired
@@ -46,7 +68,3 @@ public class CourseDao {
         this.mongoTemplate = mongoTemplate;
     }
 }
-
-
-// create a db in mongoDB.
-// use mongohello;

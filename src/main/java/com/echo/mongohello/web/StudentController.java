@@ -4,9 +4,7 @@ import com.echo.mongohello.dao.StudentDao;
 import com.echo.mongohello.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -57,6 +55,11 @@ public class StudentController {
         return studentDao.findNameAndSexOfStudentAgeLt(age);
     }
 
+    @RequestMapping(value = "/insert-many", method = RequestMethod.POST)
+    public void insertMany(@RequestBody List<Map<String, Object>> list) {
+        studentDao.insertMany(list);
+    }
+
     // insert a student.
     // student has age, class_, dname, name, sid, sex, birthday, sid.
     // sid is necessary. other fields are optional.
@@ -73,6 +76,13 @@ public class StudentController {
         dname.ifPresent(student::setDname);
         // insert student.
         return studentDao.insertStudent(student);
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public void updateOne(@RequestBody List<Map<String, Object>> list) {
+        System.out.println("GOT: ");
+        System.out.println(list);
+        studentDao.updateMany(list);
     }
 
     @Autowired

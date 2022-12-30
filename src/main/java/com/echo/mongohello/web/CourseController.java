@@ -4,11 +4,10 @@ import com.echo.mongohello.dao.CourseDao;
 import com.echo.mongohello.entity.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -31,14 +30,28 @@ public class CourseController {
         return courseDao.findCourseByFcid(fcid);
     }
 
+    @RequestMapping(value = "/insert-many", method = RequestMethod.POST)
+    public void insertMany(@RequestBody List<Map<String, Object>> list) {
+        courseDao.insertMany(list);
+    }
+
     // get all courses.
     @RequestMapping("/getAllCourses")
     public List<Course> getAllCourses() {
         return courseDao.findAllCourses();
     }
 
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public void updateOne(@RequestBody List<Map<String, Object>> list) {
+        System.out.println("GOT: ");
+        System.out.println(list);
+        courseDao.updateMany(list);
+    }
+
     @Autowired
     public void setCourseDao(CourseDao courseDao) {
         this.courseDao = courseDao;
     }
+
+
 }
