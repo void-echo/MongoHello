@@ -25,11 +25,9 @@ import java.util.Map;
 @RequestMapping("/sql")
 public class PhonySQLHelper {
     MongoTemplate mongoTemplate;
-    private CourseDao courseDao;
     private StudentDao studentDao;
-    private TeacherDao teacherDao;
     private StudentCourseDao studentCourseDao;
-    private TeacherCourseDao teacherCourseDao;
+
 
     @RequestMapping("/delete-table")
     public boolean deleteAllRowsOfTable(String table_name) {
@@ -130,7 +128,7 @@ public class PhonySQLHelper {
     }
 
     @RequestMapping("/get-available-courses-by-sid")
-    public List<Course> getAvailableCourse(String sid) {
+    public List<Map<String, Object>> getAvailableCourse(String sid) {
         return studentCourseDao.getAvailableCourse(sid);
     }
 
@@ -139,30 +137,16 @@ public class PhonySQLHelper {
         this.mongoTemplate = mongoTemplate;
     }
 
-    // autowire dao
-    @Autowired
-    public void setCourseDao(CourseDao courseDao) {
-        this.courseDao = courseDao;
-    }
+
 
     @Autowired
     public void setStudentDao(StudentDao studentDao) {
         this.studentDao = studentDao;
     }
 
-    @Autowired
-    public void setTeacherDao(TeacherDao teacherDao) {
-        this.teacherDao = teacherDao;
-    }
 
     @Autowired
     public void setStudentCourseDao(StudentCourseDao studentCourseDao) {
         this.studentCourseDao = studentCourseDao;
     }
-
-    @Autowired
-    public void setTeacherCourseDao(TeacherCourseDao teacherCourseDao) {
-        this.teacherCourseDao = teacherCourseDao;
-    }
-
 }

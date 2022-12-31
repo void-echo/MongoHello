@@ -216,13 +216,13 @@ public class DataInitializer {
                 System.out.println("Operate end on a null row " + i + " of sheet " + sheet.getSheetName() + " of workbook " + workbook);
                 break;
             }
-            // tid, cid
-            var tid = row.getCell(0) == null ? null : row.getCell(0).toString();
+            // cid, tid
+            var tid = row.getCell(1) == null ? null : row.getCell(1).toString();
             if (tid == null) {
                 System.out.println("tid is null");
                 continue;
             }
-            var cid = row.getCell(1) == null ? null : row.getCell(1).toString();
+            var cid = row.getCell(0) == null ? null : row.getCell(0).toString();
             TeacherCourse teacherCourse = new TeacherCourse(tid, cid);
             teacherCourseDao.insertTeacherCourse(teacherCourse);
         }

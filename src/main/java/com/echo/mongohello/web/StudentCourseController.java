@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RestController
@@ -42,9 +43,15 @@ public class StudentCourseController {
         return studentCourseDao.findStudentCourseBySidAndCid(sid, cid).toString();
     }
 
+    @RequestMapping("/insert-many-1")
+    @Deprecated
+    public boolean insertMany_(List<StudentCourse> data) {
+        return studentCourseDao.insertMany_(data);
+    }
+
     @RequestMapping("/insert-many")
-    public boolean insertMany(List<StudentCourse> data) {
-        return studentCourseDao.insertMany(data);
+    public void insertMany(List<Map<String, Object>> data) {
+        studentCourseDao.insertMany(data);
     }
 
     @Autowired
