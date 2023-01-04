@@ -68,12 +68,6 @@ public class CourseSelection {
             result.addAll(courseDao.findCourseByFcid(sc.getCid()));
         }
         result.addAll(courseDao.findCourseByFcid(null));
-        //        for (var course : result) {
-        //            List<TeacherCourse> map = teacherCourseDao.findAllTeacherCoursesByCid(course.getCid());
-        //            if (map != null) {
-        //                course.put("tid", map.get("tid"));
-        //            }
-        //        }
         return result;
     }
 

@@ -43,8 +43,6 @@ public class CourseController {
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public void updateOne(@RequestBody List<Map<String, Object>> list) {
-        System.out.println("GOT: ");
-        System.out.println(list);
         courseDao.updateMany(list);
     }
 

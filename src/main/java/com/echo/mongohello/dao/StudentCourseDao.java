@@ -51,7 +51,8 @@ public class StudentCourseDao {
     }
 
     public List<String> findDistinctAllCourseNames() {
-        List<String> cids = mongoTemplate.findDistinct(new Query(), "cid", "student_course", String.class);
+        List<String> cids = mongoTemplate.findDistinct(
+                new Query(), "cid", "student_course", String.class);
         Set<String> cidSet = new HashSet<>(cids);
         List<String> courseNames = new ArrayList<>();
         cidSet.forEach((cid) -> {
@@ -110,7 +111,9 @@ public class StudentCourseDao {
             map.put("name", course.getName());
             map.put("credit", course.getCredit());
             map.put("fcid", course.getFcid());
-            var tc = mongoTemplate.findOne(new Query(Criteria.where("cid").is(course.getCid())), TeacherCourse.class);
+            var tc = mongoTemplate.findOne(
+                    new Query(Criteria.where("cid").is(course.getCid())),
+                    TeacherCourse.class);
             map.put("tid", tc == null ? "" : tc.getTid());
             result.add(map);
         });
@@ -131,7 +134,8 @@ public class StudentCourseDao {
     }
 
     public void updateOne(Map<String, Object> map) {
-        Query query = new Query(Criteria.where("cid").is(map.get("cid")).and("tid").is(map.get("tid")));
+        Query query = new Query(
+                Criteria.where("cid").is(map.get("cid")).and("tid").is(map.get("tid")));
         Update update = new Update();
         for (var entry : map.entrySet()) {
             update.set(entry.getKey(), entry.getValue());

@@ -129,7 +129,8 @@ public class StudentDao {
             if (student == null || student.getName() == null) {
                 return;
             }
-            StudentAndSelectedCourseNum studentAndSelectedCourseNum = new StudentAndSelectedCourseNum(student, (Integer) tinySet.get("selectedCourseNum"));
+            StudentAndSelectedCourseNum studentAndSelectedCourseNum =
+                    new StudentAndSelectedCourseNum(student, (Integer) tinySet.get("selectedCourseNum"));
             studentAndSelectedCourseNumList.add(studentAndSelectedCourseNum);
         });
 

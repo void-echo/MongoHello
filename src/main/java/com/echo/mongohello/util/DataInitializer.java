@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * DataInitializer: Init data from xlsx file.
  */
+@SuppressWarnings({"DuplicatedCode", "BooleanMethodIsAlwaysInverted", "FieldCanBeLocal", "unused"})
 @Component
 @RestController
 @CrossOrigin
@@ -36,7 +37,6 @@ public class DataInitializer {
 
     /**
      * @return true if all tables are initialized successfully.
-     * @throws IOException if xlsx file is not found.
      * DO NOT run this method if data is already put into database.
      */
     @RequestMapping("/init")
@@ -100,7 +100,6 @@ public class DataInitializer {
             }
         });
         return flag.get();
-
     }
 
 
